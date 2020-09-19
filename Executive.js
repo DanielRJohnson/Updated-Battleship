@@ -8,9 +8,9 @@ class Executive {
     constructor() {
 		/*
 		* @member numShips {number} The number of ships each player will have
- 		* @member rows {number} The number of rows each board will have
- 		* @member cols {number} The number of columns each board will have
- 		*/
+		* @member rows {number} The number of rows each board will have
+		* @member cols {number} The number of columns each board will have
+		*/
 		this.numShips = document.getElementById("ship-slider").value;
 		// Future enhancement: Allow the user to select the size of the board
 		this.rows = 9;
@@ -19,6 +19,17 @@ class Executive {
 		document.getElementById("ship-slider").addEventListener("input", e => {
 			this.numShips = e.target.value
 			document.getElementById("num-ships").innerHTML = this.numShips;
+		});
+
+		document.getElementById("difficulty-slider").addEventListener("input", e => {
+			//This can probably be improved.
+			this.difficulty = e.target.value;
+			let mapString = "";
+			if (this.difficulty == 1){mapString = "Easy";}
+			else if (this.difficulty == 2){mapString = "Medium";}
+			else if (this.difficulty == 3) {mapString = "Hard";}
+			else{mapString = "ERROR";}
+			document.getElementById("difficulty").innerHTML = mapString;
 		});
 
 		// Setting up the event for a click to change the menu for the board

@@ -24,10 +24,13 @@ class Gameplay {
 		this.turn = false;
 		this.isSetup = false;
 		this.numShipsPlaced = 0;
+		this.difficulty = document.getElementById("difficulty-slider").value;
+		this.isAI = document.getElementById("numPlayers").value == "OnePlayer" ? true : false;
 
 		this.board0 = new Board(rows, cols, this.numShips);
 		this.board1 = new Board(rows, cols, this.numShips);
 		this.renderBoards(false);
+
 		
 		this.isVertical = false;
 		for (let radio of document.getElementsByName("dir")) {
@@ -39,36 +42,53 @@ class Gameplay {
 		this.msg(this.playerName(this.turn) + " place your " + this.numShips + " ship");
 
 		document.getElementById("switch-turn").addEventListener("click", e => {
-			if (this.isSetup) {
-				this.msg("Switching turn...");
-				this.blankBoards();
-				document.getElementById("switch-turn").style.display = "none";
-				let modal = document.getElementById("modal");
-				modal.style.display = "block";
-				let time = 5;
-				document.getElementById("turn-switch-time").innerText = time;
-				this.turnTimer = setInterval(() => {
-					time--;
+			if (!this.isAI){
+				if (this.isSetup) {
+					this.msg("Switching turn...");
+					this.blankBoards();
+					document.getElementById("switch-turn").style.display = "none";
+					let modal = document.getElementById("modal");
+					modal.style.display = "block";
+					let time = 5;
 					document.getElementById("turn-switch-time").innerText = time;
-					if (time <= 0) this.switchTurns();
-				}, 1000);
+					this.turnTimer = setInterval(() => {
+						time--;
+						document.getElementById("turn-switch-time").innerText = time;
+						if (time <= 0) this.switchTurns();
+					}, 1000);
+				}
+				else { // Switch to second player placing their ships
+					this.numShipsPlaced = 0;
+					this.turn = true;
+					document.getElementById("switch-turn").style.display = "none";
+					document.getElementById("dir-container").style.display = "";
+					this.renderBoards(false);
+					this.msg(this.playerName(this.turn) + " place your " + this.numShips + " ship");
+				}
 			}
-			else { // Switch to second player placing their ships
-				this.numShipsPlaced = 0;
-				this.turn = true;
-				document.getElementById("switch-turn").style.display = "none";
-				document.getElementById("dir-container").style.display = "";
-				this.renderBoards(false);
-				this.msg(this.playerName(this.turn) + " place your " + this.numShips + " ship");
+			else{
+				if (this.isSetup){
+					this.switchTurns();
+					this.AITurn();
+					if (this.board0.checkWin()){
+						this.gameEnd();
+					}
+					this.switchTurns();
+				}
+				else{
+					this.numShipsPlaced = 0;
+					this.turn = true;
+					this.AIPlaceShips();
+					//this.renderBoards(false);
+					this.switchTurns();
+				}
 			}
 		});
-		
 		document.getElementById("switch-now").addEventListener("click", e => this.switchTurns());
 		
 		// Future enhancement: Reset the game properly so player names can be kept
 		document.getElementById("play-again").addEventListener("click", e => window.location.reload());
 	}
-
 	/**
 	* @description Sets up the next player's turn by hiding the turn switch modal and displaying their ships
 	**/
@@ -78,6 +98,73 @@ class Gameplay {
 		this.renderBoards(false);
 		clearInterval(this.turnTimer);
 		this.msg("It's " + this.playerName(this.turn) + "'s turn. Attack a space on " + this.playerName(!this.turn) + "'s board.");
+	}
+	//going out of bounds on medium
+	AITurn(){
+		let randomX = Math.floor(Math.random() * 9);
+		let randomY = Math.floor(Math.random() * 9);
+		while(this.board0.cells[randomY][randomX].isHit){
+			randomX = Math.floor(Math.random() * 9);
+			randomY = Math.floor(Math.random() * 9);
+		}
+		//easy
+		if (this.difficulty == 1){
+			this.clickSpace(this.board0.cells[randomY][randomX] , false);
+		}
+		//medium
+		else if (this.difficulty == 2){
+			//loop through entire board
+			//if hit space is found, hit a random space around it
+			//else hit random square
+			let direction;
+			let found = false;
+			for (let i = 0; i < this.board0.cells.length; i++){
+				for (let j = 0; j < this.board0.cells[0].length; j++){
+					if(this.board0.cells[i][j].isHit){
+						found = true
+						let randomXOffset = Math.floor(Math.random() * 2);
+						let randomYOffset = randomXOffset == 0 ? 1 : 0;
+						
+						direction = Math.floor(Math.random() * 2);
+						
+						if(direction == 0){
+							this.clickSpace(this.board0.cells[randomY + randomYOffset][randomX + randomXOffset], false);
+						}
+						else{
+							this.clickSpace(this.board0.cells[randomY - randomYOffset][randomX - randomXOffset], false);
+						}
+					}
+				}
+			}
+			if (!found){
+				//shoot randomly
+				this.clickSpace(this.board0.cells[randomY][randomX] , false);
+			}
+		}
+		//hard
+		else if (this.difficulty == 3){
+			loop1:
+				for (let i = 0; i < this.board0.cells.length; i++){
+			loop2:
+					for (let j = 0; j < this.board0.cells[0].length; j++){
+					if(this.board0.cells[i][j].hasShip && !this.board0.cells[i][j].isHit){
+						this.clickSpace(this.board0.cells[i][j], false);
+						break loop1;
+					}
+				}
+			}
+		}
+	}
+
+	AIPlaceShips(){
+		while (this.numShipsPlaced < this.numShips){
+			let randomX = Math.floor(Math.random() * 9);
+			let randomY = Math.floor(Math.random() * 9);
+			let isVert = Math.floor(Math.random() * 2);
+			if (isVert == 0) this.isVertical = !this.isVertical; 
+			console.log(randomY, randomX, this.isVertical);
+			this.newShip(this.board1.cells[randomY][randomX]);
+		}
 	}
 
 	/**
