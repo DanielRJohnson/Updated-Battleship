@@ -16,6 +16,20 @@ class Executive {
 		this.rows = 9;
 		this.cols = 9;
 		
+		let selectPlayers = document.getElementById("numPlayers");
+		selectPlayers.addEventListener("change", () => {
+			if (selectPlayers.value == "TwoPlayers"){
+				document.getElementById("textSelectDifficulty").style.display = "none";
+				document.getElementById("difficulty-slider").style.display = "none";
+				document.getElementById("difficulty").style.display = "none";
+			}
+			else{
+				document.getElementById("textSelectDifficulty").style.display = "";
+				document.getElementById("difficulty-slider").style.display = "";
+				document.getElementById("difficulty").style.display = "";
+			}
+		});
+
 		document.getElementById("ship-slider").addEventListener("input", e => {
 			this.numShips = e.target.value
 			document.getElementById("num-ships").innerHTML = this.numShips;

@@ -70,10 +70,12 @@ class Gameplay {
 				if (this.isSetup){
 					this.switchTurns();
 					this.AITurn();
+					this.switchTurns();
 					if (this.board0.checkWin()){
+						this.turn = !this.turn;
 						this.gameEnd();
 					}
-					this.switchTurns();
+					
 				}
 				else{
 					this.numShipsPlaced = 0;
@@ -118,76 +120,52 @@ class Gameplay {
 			//else hit random square
 			let direction;
 			let found = false;
-			for (let i = 0; i < this.board0.cells.length; i++){
-				for (let j = 0; j < this.board0.cells[0].length; j++){
-					if(this.board0.cells[i][j].isHit){
-						found = true
-						let randomXOffset = Math.floor(Math.random() * 2);
-						let randomYOffset = randomXOffset == 0 ? 1 : 0;
-
-						direction = Math.floor(Math.random() * 2);
-
-						//boundary checks the corners
-						if(i = 0 && j = 0){
-							this.clickSpace(this.board0.cells[randomY - randomYOffset][randomX + randomXOffset], false);
-						}
-						else if(i = this.board0.cells.length - 1 && j = this.board0.cells.length - 1){
-							this.clickSpace(this.board0.cells[randomY + randomYOffset][randomX - randomXOffset], false);
-						}
-						else if(i = 0 && j = this.board0.cells.length - 1){
-							this.clickSpace(this.board0.cells[randomY + randomYOffset][randomX - randomXOffset], false);
-						}
-						else if(i = this.board0.cells.length - 1 && j = 0){
-							this.clickSpace(this.board0.cells[randomY - randomYOffset][randomX - randomXOffset], false);
-						}
-
-
-					//boundary checks the top edge
-						else if(j = 0){
-							if(direction == 0){
-								this.clickSpace(this.board0.cells[randomY][randomX + randomXOffset], false);
+			let shot = false;
+			let foundAvailableSpace = false;
+			//loop1:
+				for (let i = 0; i < this.board0.cells.length; i++){
+					for (let j = 0; j < this.board0.cells[0].length; j++){
+						if(this.board0.cells[i][j].isHit && this.board0.cells[i][j].hasShip){
+							found = true
+							//let randomXOffset = Math.floor(Math.random() * 2);
+							//let randomYOffset = randomXOffset == 0 ? 1 : 0;
+							//directionX = Math.floor(Math.random() * 2);
+							console.log("Not Random");
+							if (!shot){
+								if (i > 0 && !this.board0.cells[i - 1][j].isHit){
+									this.clickSpace(this.board0.cells[i - 1][j], false);
+									shot = true;
+									foundAvailableSpace = true;
+									console.log("Up");
+								}
+								else if (j > 0 && !this.board0.cells[i][j - 1].isHit){
+									this.clickSpace(this.board0.cells[i][j - 1], false);
+									shot = true;
+									foundAvailableSpace = true;
+									console.log("Left");
+								}
+								else if (i < 8 && !this.board0.cells[i + 1][j].isHit){
+									this.clickSpace(this.board0.cells[i + 1][j], false);
+									shot = true;
+									foundAvailableSpace = true;
+									console.log("Down");
+								}
+								else if (j < 8 && !this.board0.cells[i][j + 1].isHit){
+									this.clickSpace(this.board0.cells[i][j + 1], false);
+									shot = true;
+									foundAvailableSpace = true;
+									console.log("Right");
+								}
 							}
-						 else{
-							 this.clickSpace(this.board0.cells[randomY - randomYOffset][randomX - randomXOffset], false);
-						 }
 						}
-					//boundary checks the left edge
-						else if(i = 0){
-							if(direction == 0){
-								this.clickSpace(this.board0.cells[randomY + randomYOffset][randomX + randomXOffset], false);
-						  }
-						  else{
-								this.clickSpace(this.board0.cells[randomY - randomYOffset][randomX], false);
-						  }
-					 }
-					 //boundary checks the right edge
-					 else if(i = this.board0.cells.length - 1){
-						 if(direction == 0){
-							 this.clickSpace(this.board0.cells[randomY + randomYOffset][randomX], false);
-						 }
-						 else{
-							 this.clickSpace(this.board0.cells[randomY - randomYOffset][randomX - randomXOffset], false);
-						 }
-					 }
-
-					 //boundary checks bottom edge
-					 else if(j = this.board0.cells.length - 1){
-						 if(direction == 0){
-							 this.clickSpace(this.board0.cells[randomY + randomYOffset][randomX + randomXOffset], false);
-						 }
-						 else{
-							 this.clickSpace(this.board0.cells[randomY][randomX - randomXOffset], false);
-						 }
-					 }
-
-			if (!found){
+					}
+				}
+			if (!found || !foundAvailableSpace){
 				//shoot randomly
+				console.log("Random");
 				this.clickSpace(this.board0.cells[randomY][randomX] , false);
 			}
-		 }
-	  }
-   }
-  }
+		}
 		//hard
 		else if (this.difficulty == 3){
 			loop1:
@@ -254,6 +232,18 @@ class Gameplay {
 				if (cell.hasShip) {
 					let board = this.turn ? this.board0 : this.board1;
 					this.msg("Hit!");
+					for (let i = 0; i < board.ships.length; i++){
+						for (let j = 0; j < board.ships[i].shipSquares.length; j++){
+							if (board.ships[i].shipSquares[j].row == cell.row
+									&& board.ships[i].shipSquares[j].col == cell.col){
+										board.ships[i].shipSquares[j].isHit = true;
+							}
+						}
+						if (board.ships[i].isSunk() && !board.ships[i].sunkAnnounced){
+							this.msg("Sunk!");
+							board.ships[i].sunkAnnounced = true;
+						}
+					}
 					board.shipSpaces--;
 					if (board.checkWin()){
 						this.gameEnd();

@@ -14,6 +14,17 @@ class Ship {
 		this.row = row;
 		this.col = col;
 		this.isVertical = isVertical;
+		this.shipSquares = [];
+		this.sunkAnnounced = false;
+		for (let i = 0; i < this.length; i++){
+			if (this.isVertical){
+				this.shipSquares.push({row : row + i, col : col, isHit : false });
+			}
+			else{
+				this.shipSquares.push({row : row, col : col + i, isHit : false });
+			}
+			
+		}
 	}
 
 	/**
@@ -31,5 +42,15 @@ class Ship {
 			}
 		}
 		return coords;
+	}
+
+	isSunk(){
+		let sunk = true;
+		for (let i = 0; i < this.shipSquares.length; i++){
+			if (this.shipSquares[i].isHit == false){
+				sunk = false;
+			} 
+		}
+		return sunk;
 	}
 }
