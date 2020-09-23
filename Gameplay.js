@@ -31,14 +31,14 @@ class Gameplay {
 		this.board1 = new Board(rows, cols, this.numShips);
 		this.renderBoards(false);
 
-		
+
 		this.isVertical = false;
 		for (let radio of document.getElementsByName("dir")) {
 			radio.addEventListener("change", e => {
 				if (e.target.checked) this.isVertical = e.target.value == "true";
 			});
 		}
-		
+
 		this.msg(this.playerName(this.turn) + " place your " + this.numShips + " ship");
 
 		document.getElementById("switch-turn").addEventListener("click", e => {
@@ -85,7 +85,7 @@ class Gameplay {
 			}
 		});
 		document.getElementById("switch-now").addEventListener("click", e => this.switchTurns());
-		
+
 		// Future enhancement: Reset the game properly so player names can be kept
 		document.getElementById("play-again").addEventListener("click", e => window.location.reload());
 	}
@@ -124,23 +124,70 @@ class Gameplay {
 						found = true
 						let randomXOffset = Math.floor(Math.random() * 2);
 						let randomYOffset = randomXOffset == 0 ? 1 : 0;
-						
+
 						direction = Math.floor(Math.random() * 2);
-						
-						if(direction == 0){
-							this.clickSpace(this.board0.cells[randomY + randomYOffset][randomX + randomXOffset], false);
+
+						//boundary checks the corners
+						if(i = 0 && j = 0){
+							this.clickSpace(this.board0.cells[randomY - randomYOffset][randomX + randomXOffset], false);
 						}
-						else{
+						else if(i = this.board0.cells.length - 1 && j = this.board0.cells.length - 1){
+							this.clickSpace(this.board0.cells[randomY + randomYOffset][randomX - randomXOffset], false);
+						}
+						else if(i = 0 && j = this.board0.cells.length - 1){
+							this.clickSpace(this.board0.cells[randomY + randomYOffset][randomX - randomXOffset], false);
+						}
+						else if(i = this.board0.cells.length - 1 && j = 0){
 							this.clickSpace(this.board0.cells[randomY - randomYOffset][randomX - randomXOffset], false);
 						}
-					}
-				}
-			}
+
+
+					//boundary checks the top edge
+						else if(j = 0){
+							if(direction == 0){
+								this.clickSpace(this.board0.cells[randomY][randomX + randomXOffset], false);
+							}
+						 else{
+							 this.clickSpace(this.board0.cells[randomY - randomYOffset][randomX - randomXOffset], false);
+						 }
+						}
+					//boundary checks the left edge
+						else if(i = 0){
+							if(direction == 0){
+								this.clickSpace(this.board0.cells[randomY + randomYOffset][randomX + randomXOffset], false);
+						  }
+						  else{
+								this.clickSpace(this.board0.cells[randomY - randomYOffset][randomX], false);
+						  }
+					 }
+					 //boundary checks the right edge
+					 else if(i = this.board0.cells.length - 1){
+						 if(direction == 0){
+							 this.clickSpace(this.board0.cells[randomY + randomYOffset][randomX], false);
+						 }
+						 else{
+							 this.clickSpace(this.board0.cells[randomY - randomYOffset][randomX - randomXOffset], false);
+						 }
+					 }
+
+					 //boundary checks bottom edge
+					 else if(j = this.board0.cells.length - 1){
+						 if(direction == 0){
+							 this.clickSpace(this.board0.cells[randomY + randomYOffset][randomX + randomXOffset], false);
+						 }
+						 else{
+							 this.clickSpace(this.board0.cells[randomY][randomX - randomXOffset], false);
+						 }
+					 }
+
 			if (!found){
 				//shoot randomly
 				this.clickSpace(this.board0.cells[randomY][randomX] , false);
 			}
-		}
+		 }
+	  }
+   }
+  }
 		//hard
 		else if (this.difficulty == 3){
 			loop1:
@@ -161,7 +208,7 @@ class Gameplay {
 			let randomX = Math.floor(Math.random() * 9);
 			let randomY = Math.floor(Math.random() * 9);
 			let isVert = Math.floor(Math.random() * 2);
-			if (isVert == 0) this.isVertical = !this.isVertical; 
+			if (isVert == 0) this.isVertical = !this.isVertical;
 			console.log(randomY, randomX, this.isVertical);
 			this.newShip(this.board1.cells[randomY][randomX]);
 		}
@@ -194,7 +241,7 @@ class Gameplay {
 		document.getElementById("switch-turn").style.display = "none";
 		document.getElementById("play-again").style.display = "";
 	}
-	
+
 	/**
 	* @description Handles a space being clicked on either board
 	* @param {Space} cell The Space object that was clicked
@@ -210,7 +257,7 @@ class Gameplay {
 					board.shipSpaces--;
 					if (board.checkWin()){
 						this.gameEnd();
-					} 
+					}
 					else {
 						this.renderBoards(true);
 						document.getElementById("switch-turn").style.display = "";
@@ -261,7 +308,7 @@ class Gameplay {
 	msg(message) {
 		document.getElementById("message").innerHTML = message;
 	}
-	
+
 	/**
 	* @param player {boolean} Which player to get the name of
 	* @return {string} The name of the specified player
