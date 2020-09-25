@@ -127,34 +127,31 @@ class Gameplay {
 					for (let j = 0; j < this.board0.cells[0].length; j++){
 						if(this.board0.cells[i][j].isHit && this.board0.cells[i][j].hasShip){
 							found = true
-							//let randomXOffset = Math.floor(Math.random() * 2);
-							//let randomYOffset = randomXOffset == 0 ? 1 : 0;
-							//directionX = Math.floor(Math.random() * 2);
-							console.log("Not Random");
+							//console.log("Not Random");
 							if (!shot){
 								if (i > 0 && !this.board0.cells[i - 1][j].isHit){
 									this.clickSpace(this.board0.cells[i - 1][j], false);
 									shot = true;
 									foundAvailableSpace = true;
-									console.log("Up");
+									//console.log("Up");
 								}
 								else if (j > 0 && !this.board0.cells[i][j - 1].isHit){
 									this.clickSpace(this.board0.cells[i][j - 1], false);
 									shot = true;
 									foundAvailableSpace = true;
-									console.log("Left");
+									//console.log("Left");
 								}
 								else if (i < 8 && !this.board0.cells[i + 1][j].isHit){
 									this.clickSpace(this.board0.cells[i + 1][j], false);
 									shot = true;
 									foundAvailableSpace = true;
-									console.log("Down");
+									//console.log("Down");
 								}
 								else if (j < 8 && !this.board0.cells[i][j + 1].isHit){
 									this.clickSpace(this.board0.cells[i][j + 1], false);
 									shot = true;
 									foundAvailableSpace = true;
-									console.log("Right");
+									//console.log("Right");
 								}
 							}
 						}
@@ -162,7 +159,7 @@ class Gameplay {
 				}
 			if (!found || !foundAvailableSpace){
 				//shoot randomly
-				console.log("Random");
+				//console.log("Random");
 				this.clickSpace(this.board0.cells[randomY][randomX] , false);
 			}
 		}
@@ -187,7 +184,7 @@ class Gameplay {
 			let randomY = Math.floor(Math.random() * 9);
 			let isVert = Math.floor(Math.random() * 2);
 			if (isVert == 0) this.isVertical = !this.isVertical;
-			console.log(randomY, randomX, this.isVertical);
+			//console.log(randomY, randomX, this.isVertical);
 			this.newShip(this.board1.cells[randomY][randomX]);
 		}
 	}
@@ -227,10 +224,37 @@ class Gameplay {
 	**/
 	clickSpace(cell, isCurrentPlayer) {
 		if (this.isSetup) {
+			var explosionEffect;
+			explosionEffect = new sound("Explosion1.wav");
+			var winnerEffect;
+			let modNumShips = 0;
+			if(this.numShips==1)
+			{
+				modNumShips=1;
+			}
+			if(this.numShips==2)
+			{
+				modNumShips=3;
+			}
+			if(this.numShips==3)
+			{
+				modNumShips=6;
+			}
+			if(this.numShips==4)
+			{
+				modNumShips=10;
+			}
+			if(this.numShips==5)
+			{
+				modNumShips=15;
+			}
+		winnerEffect= new sound ("Win.mp3");
 			if (!isCurrentPlayer && !cell.isHit) {
 				cell.isHit = true;
 				if (cell.hasShip) {
 					let board = this.turn ? this.board0 : this.board1;
+					this.scoreBoard();
+					explosionEffect.play();
 					this.msg("Hit!");
 					for (let i = 0; i < board.ships.length; i++){
 						for (let j = 0; j < board.ships[i].shipSquares.length; j++){
@@ -246,6 +270,10 @@ class Gameplay {
 					}
 					board.shipSpaces--;
 					if (board.checkWin()){
+						winnerEffect.play();
+						let m = modNumShips-this.board0.get_shipSpace();
+
+						let n = modNumShips-this.board1.get_shipSpace();
 						this.gameEnd();
 					}
 					else {
@@ -258,6 +286,12 @@ class Gameplay {
 					document.getElementById("switch-turn").style.display = "";
 					this.msg("Miss.")
 				}
+				var m = modNumShips-this.board0.get_shipSpace();
+				// this.msg(m);
+
+				var n = modNumShips-this.board1.get_shipSpace();
+				// this.msg(n);
+				this.scoreBoard(m,n)
 			}
 		}
 		else if (isCurrentPlayer) { // During setup phase, you click your own board
@@ -290,6 +324,13 @@ class Gameplay {
 				this.isSetup = true;
 			}
 		}
+	}
+
+	scoreBoard(m,n){
+		document.getElementById("scoreboards").style.display = "";
+		document.getElementById("player0-score").innerHTML = n;
+		document.getElementById("player1-score").innerHTML = m;
+		// return document.getElementById("scoreboards").innerHTML;
 	}
 
 	/**

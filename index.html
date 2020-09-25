@@ -9,6 +9,7 @@
 		<script src="Board.js"></script>
 		<script src="Space.js"></script>
 		<script src="Ship.js"></script>
+		<script src="Sounds.js"></script>
 	</head>
 	<body>
 		<h1>BATTLESHIP</h1>
@@ -70,9 +71,32 @@
 			</div>
 		</div>
 		
+		
+		
+		<div id="push"></div>
+			<div class="ScoreB" id="scoreboards" style="display:none">
+			<table border="4" width="20%" align="center" style="border-collapse: collapse;">
+				<tr>
+					<th>Player</th>
+					<th>Hit</th>
+					<th>sunk</th>
+				</tr>
+				<tr>
+					<th width="40%"><label class="player-name" id="player0-scoreboards"></th>
+					<th width="30%"><span class="scoreboards" id="player0-score"></th>
+					<th><!-- /**sunk**/ -->0</th>
+				</tr>
+				<tr>
+					<th width="40%"><label class="player-name" id="player1-scoreboards"></th>
+					<th width="30%"><span class="scoreboards" id="player1-score"></th>
+					<th><!-- /**sunk**/ -->1</th>
+				</tr>
+			</table>
+		</div>
+		
 		<!-- Create space for footer -->
 		<div id="push"></div>
-		
+
 		<footer>
 			<span id="authors">
 				Authors: Deepak Kumar, Drake Prebyl, James Kraijcek, Rafael Alaras, Rodridgo Figueroa Justiniano. Edited by: Saher, Trieuanh, Daniel, Rahul, Maokun.

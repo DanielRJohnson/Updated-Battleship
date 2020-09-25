@@ -56,13 +56,21 @@ class Executive {
 	initGame() {
 		for (let i = 0; i <= 1; i++) {
 			let playerName = document.getElementById("player" + i + "-name-input").value;
-			if (playerName == "") playerName = "Player " + (i+1);
-			document.getElementById("player" + i + "-name").value = playerName;
+			if (playerName == "") playerName = "Player " + (i+1);{
+					document.getElementById("player" + i + "-name").value = playerName;
+				/**change by T14**/
+				document.getElementById("player" + i + "-scoreboards").innerText = playerName;
+				/**change by T14**/
+			}
 		}
+		var backgroundMusic;
+		backgroundMusic= new sound("theme.mp3");
+		backgroundMusic.play();
 		document.getElementById("menu").style.display = "none";
 		document.getElementById("controls").style.display = "";
 		document.getElementById("both_boards").style.display = "";
 		document.getElementById("switch-turn").style.display = "none";
+		document.getElementById("scoreboards").style.display = "";
 		this.game = new Gameplay(this.rows, this.cols, this.numShips);
 	}
 }
