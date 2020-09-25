@@ -264,6 +264,7 @@ class Gameplay {
 							}
 						}
 						if (board.ships[i].isSunk() && !board.ships[i].sunkAnnounced){
+							//increment scoreboard by one
 							this.msg("Sunk!");
 							board.ships[i].sunkAnnounced = true;
 						}
@@ -287,11 +288,10 @@ class Gameplay {
 					this.msg("Miss.")
 				}
 				var m = modNumShips-this.board0.get_shipSpace();
-				// this.msg(m);
-
 				var n = modNumShips-this.board1.get_shipSpace();
-				// this.msg(n);
-				this.scoreBoard(m,n)
+				var j = this.board0.get_numSunk();
+				var k = this.board1.get_numSunk();
+				this.scoreBoard(m,n,j,k);
 			}
 		}
 		else if (isCurrentPlayer) { // During setup phase, you click your own board
@@ -326,10 +326,12 @@ class Gameplay {
 		}
 	}
 
-	scoreBoard(m,n){
+	scoreBoard(m,n,j,k){
 		document.getElementById("scoreboards").style.display = "";
 		document.getElementById("player0-score").innerHTML = n;
 		document.getElementById("player1-score").innerHTML = m;
+		document.getElementById("player0-sunk").innerHTML = j;
+		document.getElementById("player1-sunk").innerHTML = k;
 		// return document.getElementById("scoreboards").innerHTML;
 	}
 

@@ -132,4 +132,16 @@ class Board {
 		}
 		return false;
 	}
+	get_shipSpace(){
+        return this.shipSpaces;
+	}
+	get_numSunk(){
+		let count = 0;
+		for (let i = 0; i < this.ships.length; i++){
+			if (this.ships[i].isSunk()){
+				count++;
+			}
+		}
+		return count;
+	}
 }
