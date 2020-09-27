@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Home</title>
+    <title>JSDoc: Source: Sounds.js</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,32 +17,38 @@
 
 <div id="main">
 
-    <h1 class="page-title">Home</h1>
+    <h1 class="page-title">Source: Sounds.js</h1>
 
     
 
 
 
     
-
-
-    <h3> </h3>
-
-
-
-
-
-
-
-
-
-
-    
-
-
-
-
-
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+* @description controlling the sound when it should be played or stop
+* @parameter {Space} src The sound sources which should be used
+*/
+class sound {
+    constructor(src){
+      this.sound = document.createElement("audio");
+      this.sound.src = src;
+      this.sound.setAttribute("preload", "auto");
+      this.sound.setAttribute("controls", "none");
+      this.sound.style.display = "none";
+      document.body.appendChild(this.sound);
+    }
+    play = function(){
+      this.sound.play();
+    }
+    stop = function(){
+      this.sound.pause();
+    }
+}
+</code></pre>
+        </article>
+    </section>
 
 
 

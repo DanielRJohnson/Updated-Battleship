@@ -52,51 +52,73 @@ class Gameplay {
 		this.turn = false;
 		this.isSetup = false;
 		this.numShipsPlaced = 0;
+		this.difficulty = document.getElementById("difficulty-slider").value;
+		this.isAI = document.getElementById("numPlayers").value == "OnePlayer" ? true : false;
 
 		this.board0 = new Board(rows, cols, this.numShips);
 		this.board1 = new Board(rows, cols, this.numShips);
 		this.renderBoards(false);
-		
+
+
 		this.isVertical = false;
 		for (let radio of document.getElementsByName("dir")) {
 			radio.addEventListener("change", e => {
 				if (e.target.checked) this.isVertical = e.target.value == "true";
 			});
 		}
-		
+
 		this.msg(this.playerName(this.turn) + " place your " + this.numShips + " ship");
 
 		document.getElementById("switch-turn").addEventListener("click", e => {
-			if (this.isSetup) {
-				this.msg("Switching turn...");
-				this.blankBoards();
-				document.getElementById("switch-turn").style.display = "none";
-				let modal = document.getElementById("modal");
-				modal.style.display = "block";
-				let time = 5;
-				document.getElementById("turn-switch-time").innerText = time;
-				this.turnTimer = setInterval(() => {
-					time--;
+			if (!this.isAI){
+				if (this.isSetup) {
+					this.msg("Switching turn...");
+					this.blankBoards();
+					document.getElementById("switch-turn").style.display = "none";
+					let modal = document.getElementById("modal");
+					modal.style.display = "block";
+					let time = 5;
 					document.getElementById("turn-switch-time").innerText = time;
-					if (time &lt;= 0) this.switchTurns();
-				}, 1000);
+					this.turnTimer = setInterval(() => {
+						time--;
+						document.getElementById("turn-switch-time").innerText = time;
+						if (time &lt;= 0) this.switchTurns();
+					}, 1000);
+				}
+				else { // Switch to second player placing their ships
+					this.numShipsPlaced = 0;
+					this.turn = true;
+					document.getElementById("switch-turn").style.display = "none";
+					document.getElementById("dir-container").style.display = "";
+					this.renderBoards(false);
+					this.msg(this.playerName(this.turn) + " place your " + this.numShips + " ship");
+				}
 			}
-			else { // Switch to second player placing their ships
-				this.numShipsPlaced = 0;
-				this.turn = true;
-				document.getElementById("switch-turn").style.display = "none";
-				document.getElementById("dir-container").style.display = "";
-				this.renderBoards(false);
-				this.msg(this.playerName(this.turn) + " place your " + this.numShips + " ship");
+			else{
+				if (this.isSetup){
+					this.switchTurns();
+					this.AITurn();
+					this.switchTurns();
+					if (this.board0.checkWin()){
+						this.turn = !this.turn;
+						this.gameEnd();
+					}
+					
+				}
+				else{
+					this.numShipsPlaced = 0;
+					this.turn = true;
+					this.AIPlaceShips();
+					//this.renderBoards(false);
+					this.switchTurns();
+				}
 			}
 		});
-		
 		document.getElementById("switch-now").addEventListener("click", e => this.switchTurns());
-		
+
 		// Future enhancement: Reset the game properly so player names can be kept
 		document.getElementById("play-again").addEventListener("click", e => window.location.reload());
 	}
-
 	/**
 	* @description Sets up the next player's turn by hiding the turn switch modal and displaying their ships
 	**/
@@ -106,6 +128,98 @@ class Gameplay {
 		this.renderBoards(false);
 		clearInterval(this.turnTimer);
 		this.msg("It's " + this.playerName(this.turn) + "'s turn. Attack a space on " + this.playerName(!this.turn) + "'s board.");
+	}
+	/**
+	* @description Facilitates where the AI will shoot on the board based on difficulty
+	**/
+	AITurn(){
+		let randomX = Math.floor(Math.random() * 9);
+		let randomY = Math.floor(Math.random() * 9);
+		while(this.board0.cells[randomY][randomX].isHit){
+			randomX = Math.floor(Math.random() * 9);
+			randomY = Math.floor(Math.random() * 9);
+		}
+		//easy
+		if (this.difficulty == 1){
+			this.clickSpace(this.board0.cells[randomY][randomX] , false);
+		}
+		//medium
+		else if (this.difficulty == 2){
+			//loop through entire board
+			//if hit space is found, hit a random space around it
+			//else hit random square
+			let direction;
+			let found = false;
+			let shot = false;
+			let foundAvailableSpace = false;
+			//loop1:
+				for (let i = 0; i &lt; this.board0.cells.length; i++){
+					for (let j = 0; j &lt; this.board0.cells[0].length; j++){
+						if(this.board0.cells[i][j].isHit &amp;&amp; this.board0.cells[i][j].hasShip){
+							found = true
+							//console.log("Not Random");
+							if (!shot){
+								if (i > 0 &amp;&amp; !this.board0.cells[i - 1][j].isHit){
+									this.clickSpace(this.board0.cells[i - 1][j], false);
+									shot = true;
+									foundAvailableSpace = true;
+									//console.log("Up");
+								}
+								else if (j > 0 &amp;&amp; !this.board0.cells[i][j - 1].isHit){
+									this.clickSpace(this.board0.cells[i][j - 1], false);
+									shot = true;
+									foundAvailableSpace = true;
+									//console.log("Left");
+								}
+								else if (i &lt; 8 &amp;&amp; !this.board0.cells[i + 1][j].isHit){
+									this.clickSpace(this.board0.cells[i + 1][j], false);
+									shot = true;
+									foundAvailableSpace = true;
+									//console.log("Down");
+								}
+								else if (j &lt; 8 &amp;&amp; !this.board0.cells[i][j + 1].isHit){
+									this.clickSpace(this.board0.cells[i][j + 1], false);
+									shot = true;
+									foundAvailableSpace = true;
+									//console.log("Right");
+								}
+							}
+						}
+					}
+				}
+			if (!found || !foundAvailableSpace){
+				//shoot randomly
+				//console.log("Random");
+				this.clickSpace(this.board0.cells[randomY][randomX] , false);
+			}
+		}
+		//hard
+		else if (this.difficulty == 3){
+			loop1:
+				for (let i = 0; i &lt; this.board0.cells.length; i++){
+			loop2:
+					for (let j = 0; j &lt; this.board0.cells[0].length; j++){
+					if(this.board0.cells[i][j].hasShip &amp;&amp; !this.board0.cells[i][j].isHit){
+						this.clickSpace(this.board0.cells[i][j], false);
+						break loop1;
+					}
+				}
+			}
+		}
+	}
+
+	/**
+	* @description Places the ships for the AI in random fashion
+	**/
+	AIPlaceShips(){
+		while (this.numShipsPlaced &lt; this.numShips){
+			let randomX = Math.floor(Math.random() * 9);
+			let randomY = Math.floor(Math.random() * 9);
+			let isVert = Math.floor(Math.random() * 2);
+			if (isVert == 0) this.isVertical = !this.isVertical;
+			//console.log(randomY, randomX, this.isVertical);
+			this.newShip(this.board1.cells[randomY][randomX]);
+		}
 	}
 
 	/**
@@ -135,7 +249,7 @@ class Gameplay {
 		document.getElementById("switch-turn").style.display = "none";
 		document.getElementById("play-again").style.display = "";
 	}
-	
+
 	/**
 	* @description Handles a space being clicked on either board
 	* @param {Space} cell The Space object that was clicked
@@ -143,15 +257,59 @@ class Gameplay {
 	**/
 	clickSpace(cell, isCurrentPlayer) {
 		if (this.isSetup) {
+			var explosionEffect;
+			explosionEffect = new sound("Explosion1.wav");
+			var winnerEffect;
+			let modNumShips = 0;
+			if(this.numShips==1)
+			{
+				modNumShips=1;
+			}
+			if(this.numShips==2)
+			{
+				modNumShips=3;
+			}
+			if(this.numShips==3)
+			{
+				modNumShips=6;
+			}
+			if(this.numShips==4)
+			{
+				modNumShips=10;
+			}
+			if(this.numShips==5)
+			{
+				modNumShips=15;
+			}
+		winnerEffect= new sound ("Win.mp3");
 			if (!isCurrentPlayer &amp;&amp; !cell.isHit) {
 				cell.isHit = true;
 				if (cell.hasShip) {
 					let board = this.turn ? this.board0 : this.board1;
+					this.scoreBoard();
+					explosionEffect.play();
 					this.msg("Hit!");
+					for (let i = 0; i &lt; board.ships.length; i++){
+						for (let j = 0; j &lt; board.ships[i].shipSquares.length; j++){
+							if (board.ships[i].shipSquares[j].row == cell.row
+									&amp;&amp; board.ships[i].shipSquares[j].col == cell.col){
+										board.ships[i].shipSquares[j].isHit = true;
+							}
+						}
+						if (board.ships[i].isSunk() &amp;&amp; !board.ships[i].sunkAnnounced){
+							//increment scoreboard by one
+							this.msg("Sunk!");
+							board.ships[i].sunkAnnounced = true;
+						}
+					}
 					board.shipSpaces--;
 					if (board.checkWin()){
+						winnerEffect.play();
+						let m = modNumShips-this.board0.get_shipSpace();
+
+						let n = modNumShips-this.board1.get_shipSpace();
 						this.gameEnd();
-					} 
+					}
 					else {
 						this.renderBoards(true);
 						document.getElementById("switch-turn").style.display = "";
@@ -162,6 +320,11 @@ class Gameplay {
 					document.getElementById("switch-turn").style.display = "";
 					this.msg("Miss.")
 				}
+				var m = modNumShips-this.board0.get_shipSpace();
+				var n = modNumShips-this.board1.get_shipSpace();
+				var j = this.board0.get_numSunk();
+				var k = this.board1.get_numSunk();
+				this.scoreBoard(m,n,j,k);
 			}
 		}
 		else if (isCurrentPlayer) { // During setup phase, you click your own board
@@ -195,6 +358,19 @@ class Gameplay {
 			}
 		}
 	}
+	/** 
+	* @description Display the Player 1 and Player 2 scores including hit and sunk
+    * @param {number} m&amp;n The number of the Player 1 hit times and Player 2 hit times 
+    * @param {number} j&amp;k The number of sunk how many ships from Player 1 &amp; 2
+	**/
+	scoreBoard(m,n,j,k){
+		document.getElementById("scoreboards").style.display = "";
+		document.getElementById("player0-score").innerHTML = n;
+		document.getElementById("player1-score").innerHTML = m;
+		document.getElementById("player0-sunk").innerHTML = j;
+		document.getElementById("player1-sunk").innerHTML = k;
+		// return document.getElementById("scoreboards").innerHTML;
+	}
 
 	/**
 	* @description Display a message to the current player
@@ -202,7 +378,7 @@ class Gameplay {
 	msg(message) {
 		document.getElementById("message").innerHTML = message;
 	}
-	
+
 	/**
 	* @param player {boolean} Which player to get the name of
 	* @return {string} The name of the specified player
@@ -221,13 +397,13 @@ class Gameplay {
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Board.html">Board</a></li><li><a href="Executive.html">Executive</a></li><li><a href="Gameplay.html">Gameplay</a></li><li><a href="Ship.html">Ship</a></li><li><a href="Space.html">Space</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Board.html">Board</a></li><li><a href="Executive.html">Executive</a></li><li><a href="Gameplay.html">Gameplay</a></li><li><a href="Ship.html">Ship</a></li><li><a href="sound.html">sound</a></li><li><a href="Space.html">Space</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.5</a> on Sun Sep 13 2020 23:51:30 GMT-0500 (Central Daylight Time)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.6</a> on Sat Sep 26 2020 20:26:41 GMT-0500 (Central Daylight Time)
 </footer>
 
 <script> prettyPrint(); </script>
