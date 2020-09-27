@@ -2,8 +2,9 @@
 A player-versus-player hotseat Battleship game written in [Vanilla JS](http://vanilla-js.com/).
 
 # Note
-This is a project for EECS 448 (Software Engineering) at KU. This is team 14's submission.
-We forked the project from another team, and were given tasks to update and expand upon the program.
+This is a project for EECS 448 (Software Engineering) at KU. This is team 14's submission.<br>
+We forked the project from another team, and were given tasks to update and expand upon the program.<br>
+Our team is Saher, Rahul, Daniel, Maokun, and Trieuahn.<br>
 
 ## Links
 - [Click here to play](https://danielrjohnson.github.io/Updated-Battleship/)
