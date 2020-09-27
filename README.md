@@ -2,7 +2,7 @@
 A player-versus-player hotseat Battleship game written in [Vanilla JS](http://vanilla-js.com/).
 
 ## Links
-- [Click here to play](https://eecs448-locked-in-coders.github.io/battleship/index.html)
+- [Click here to play](https://danielrjohnson.github.io/Updated-Battleship/)
 - [View the documentation](https://eecs448-locked-in-coders.github.io/battleship/documentation/index.html)
 
 ## Works cited
