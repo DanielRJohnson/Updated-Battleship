@@ -101,7 +101,9 @@ class Gameplay {
 		clearInterval(this.turnTimer);
 		this.msg("It's " + this.playerName(this.turn) + "'s turn. Attack a space on " + this.playerName(!this.turn) + "'s board.");
 	}
-	//going out of bounds on medium
+	/**
+	* @description Facilitates where the AI will shoot on the board based on difficulty
+	**/
 	AITurn(){
 		let randomX = Math.floor(Math.random() * 9);
 		let randomY = Math.floor(Math.random() * 9);
@@ -178,6 +180,9 @@ class Gameplay {
 		}
 	}
 
+	/**
+	* @description Places the ships for the AI in random fashion
+	**/
 	AIPlaceShips(){
 		while (this.numShipsPlaced < this.numShips){
 			let randomX = Math.floor(Math.random() * 9);
@@ -325,7 +330,11 @@ class Gameplay {
 			}
 		}
 	}
-
+	/** 
+	* @description Display the Player 1 and Player 2 scores including hit and sunk
+    * @param {number} m&n The number of the Player 1 hit times and Player 2 hit times 
+    * @param {number} j&k The number of sunk how many ships from Player 1 & 2
+	**/
 	scoreBoard(m,n,j,k){
 		document.getElementById("scoreboards").style.display = "";
 		document.getElementById("player0-score").innerHTML = n;

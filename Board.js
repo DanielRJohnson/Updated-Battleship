@@ -103,7 +103,10 @@ class Board {
 		}
 
 	}
-
+	/**
+	* @description Checks to see if the length of ship will go out of bounds
+	* @return True or False
+	**/
 	checkBoundaries(length, row, col, isVertical) {
 		if (length > 1) {
 			if (isVertical) {
@@ -132,9 +135,15 @@ class Board {
 		}
 		return false;
 	}
+	/**
+    * @return the number of ship spaces
+    **/
 	get_shipSpace(){
         return this.shipSpaces;
 	}
+	/**
+	* @return the number of hit spaces on the board
+	**/
 	get_numSunk(){
 		let count = 0;
 		for (let i = 0; i < this.ships.length; i++){

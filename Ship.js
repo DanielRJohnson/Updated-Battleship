@@ -43,7 +43,9 @@ class Ship {
 		}
 		return coords;
 	}
-
+	/**
+	* @return whether the ship is sunk or not, T or F
+	**/
 	isSunk(){
 		let sunk = true;
 		for (let i = 0; i < this.shipSquares.length; i++){
