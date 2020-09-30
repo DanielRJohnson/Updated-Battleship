@@ -59,7 +59,7 @@ class Executive {
 			if (playerName == "") playerName = "Player " + (i+1);{
 					document.getElementById("player" + i + "-name").value = playerName;
 				/**change by T14**/
-				document.getElementById("player" + i + "-scoreboards").innerText = playerName;
+				document.getElementById("player" + i + "-score").innerText = playerName;
 				/**change by T14**/
 			}
 		}

@@ -105,7 +105,30 @@ input {
 }
 
 .ScoreB{
-	color: white;
+    border-collapse: collapse;
+    width: auto;
+    text-transform:uppercase;
+    text-align:center;
+}
+.ScoreB th{
+    border-collapse: collapse;
+    padding:5px 9px;
+    font-size:14px;
+    text-align:center;
+    background-color:#ddeeff; 
+}
+.ScoreB td{
+    color:white;
+    border-collapse: collapse;
+    padding:5px 9px;
+    font-size:20px;
+    text-align:center;
+}
+.ScoreB tr:nth-child(odd){
+    background-color:rgb(108, 158, 251); 
+}
+.ScoreB tr:nth-child(even){
+    background-color: #ff4c4c;
 }
 
 .board th, .board td {

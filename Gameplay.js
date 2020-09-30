@@ -337,10 +337,10 @@ class Gameplay {
 	**/
 	scoreBoard(m,n,j,k){
 		document.getElementById("scoreboards").style.display = "";
-		document.getElementById("player0-score").innerHTML = n;
-		document.getElementById("player1-score").innerHTML = m;
-		document.getElementById("player0-sunk").innerHTML = j;
-		document.getElementById("player1-sunk").innerHTML = k;
+		document.getElementById("player0-hit").innerHTML = n;
+		document.getElementById("player1-hit").innerHTML = m;
+		document.getElementById("player1-sunk").innerHTML = j;
+		document.getElementById("player0-sunk").innerHTML = k;
 		// return document.getElementById("scoreboards").innerHTML;
 	}
 
